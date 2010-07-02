@@ -1,3 +1,9 @@
-TESTING .......
-So far it is working good.
-Chazz this is for you.
+Configure options in the PHP file supplied.
+
+Execute by doing "screen -d -m php <file>.php"
+
+Once loaded look at commands by doing ".commands"
+
+To kill it type "killall php"
+
+Any code contributation is welcome, E-Mail me at Administrator@RKHTECH.org.
