@@ -7,21 +7,36 @@ $conf['realname']      = "";
 $conf['password']      = "";
 $conf['emailadd']      = "";
 $conf['bot_owner']     = "";
+$conf['bot_owner_host'] = "";
 $conf['user_modes']    = "+RB";
  
 /* Do Not Edit This Line. */
 $conf['authd_user']    = array();
- 
+$conf['authd_host']    = array(); 
 /* Add Authd Users Here. */
 $conf['authd_user'][1] = "";
+$conf['authd_host'][1] = "";
+
 $conf['authd_user'][2] = "";
+$conf['authd_host'][2] = "";
+
 $conf['authd_user'][3] = "";
+$conf['authd_host'][3] = "";
+
+$conf['authd_user'][4] = "";
+$conf['authd_host'][4] = "";
+
+$conf['authd_user'][5] = "";
+$conf['authd_host'][5] = "";
+
+$conf['authd_user'][6] = ""; 
+$conf['authd_host'][6] = ""; 
  
 /* Autojoin Rooms. */
-$autojoin[1] = "#rkhtech";
-$autojoin[2] = "#bots";
+$autojoin[1] = "";
+$autojoin[2] = "";
 $autojoin[3] = "";
-$autojoin[4] = "#php";
+$autojoin[4] = "";
 $autojoin[5] = "";
  
 /* Bot Commands Prefix. */
@@ -33,7 +48,9 @@ $MaxStrlen = 250;
  
  
 /***** USER SETTINGS END *****/
- 
+
+$user = exec("whoami");          
+if ($user == "root") { die("You can not run this as Root. It can cause serious problems.\r\n"); }
  
 /* Prevent Script Stopping. */
 set_time_limit(0);
@@ -90,7 +107,7 @@ while(1){
  
 		/* Quit Irc. */
 		case $pf."quit":
-			if ($nick == $conf['bot_owner']){
+			if ($nick == $conf['bot_owner']  || $host == $conf['bot_owner_host']){
 				PrintData($trigger.' '.$args, $nick);
 				if ($args == ''){
 					SockSend($socket, "QUIT :".$conf['quit_message']);
@@ -103,7 +120,7 @@ while(1){
  
 		/* Restart Client */
 		case $pf."restart":
-			if ($nick == $conf['bot_owner']){
+			if ($nick == $conf['bot_owner'] || $host == $conf['bot_owner_host']){
 				PrintData($trigger.' '.$args, $nick);
 				socket_close($socket); $socket = ircConnect();
 				}
@@ -113,7 +130,7 @@ date_default_time_zone(-8);
  
 		/* Add, Del, List, Authd User. */
 		case $pf."auth":
-			if ($nick == $conf['bot_owner']){
+			if ($nick == $conf['bot_owner'] || $host == $conf['bot_owner_host']){
 				PrintData($trigger.' '.$args, $nick);
 				$args = explode(" ", $args);
 				$authcmd = array_shift($args);
@@ -167,7 +184,7 @@ date_default_time_zone(-8);
  
 		/* Exec PHP code. Use 'Print'. */
 		case $pf."eval":
-			if ($nick == $conf['bot_owner']){
+			if ($nick == $conf['bot_owner'] || $host == $conf['bot_owner_host']){
 				PrintData($trigger.' '.$args, $nick);
 				$output = Eval($args);
 				PRIVMSG($chan, $output);
@@ -176,7 +193,7 @@ date_default_time_zone(-8);
 
 
 		case $pf."shell":
-                        if ($nick == $conf['bot_owner']){
+                        if ($nick == $conf['bot_owner'] || $host == $conf['bot_owner_host']){
                                 PrintData($trigger.' '.$args, $nick);
   $ls = shell_exec($args); $ls = explode("\n", $ls); foreach ($ls as $ls) { privmsg($chan, $ls); time_nanosleep(0, 500000000); }       
                                 }
@@ -188,7 +205,7 @@ date_default_time_zone(-8);
  
 		/* Join Room. */
 		case $pf."join":
-			if ($nick == $conf['bot_owner'] || in_array($nick, $conf['authd_user'])){
+			if ($nick == $conf['bot_owner'] || $host == $conf['bot_owner_host']){
 				PrintData($trigger.' '.$args, $nick);
 				if (preg_match("%^#[A-Za-z0-9\\\/.\-_']+$%", $args)){
 					PRIVMSG($chan, "Joining ".$args);
@@ -201,7 +218,7 @@ date_default_time_zone(-8);
  
 		/* Part Room. */
 		case $pf."part":
-			if ($nick == $conf['bot_owner'] || in_array($nick, $conf['authd_user'])){
+			if ($nick == $conf['bot_owner'] || $host == $conf['bot_owner_host']){
 				PrintData($trigger.' '.$args, $nick);
 				if ($args == ''){
 					PRIVMSG($chan, "Parting ".$chan);
@@ -219,7 +236,7 @@ date_default_time_zone(-8);
  
 		/* Change The Commands Trigger. */
 		case $pf."trigger":
-			if ($nick == $conf['bot_owner'] || in_array($nick, $conf['authd_user'])){
+			if ($nick == $conf['bot_owner']){
 				PrintData($trigger.' '.$args, $nick);
 				if (strlen($args) === 1){
 					$pf = $args;
@@ -900,5 +917,5 @@ function Truncate($string, $chan, $order = null){
 		PRIVMSG($chan, "..." . trim($msg2));
 		}
 	}
- 
+ }
 ?>
