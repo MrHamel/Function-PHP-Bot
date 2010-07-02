@@ -1,13 +1,13 @@
 <?php 
 /* Connection & Typical Settings. */
-$conf['server']        = "";
+$conf['server']        = "irc.technoirc.net";
 $conf['port']          = 6667;
-$conf['botname']       = "";
-$conf['realname']      = "";
+$conf['botname']       = "Function";
+$conf['realname']      = "Function";
 $conf['password']      = "";
-$conf['emailadd']      = "";
-$conf['bot_owner']     = "";
-$conf['bot_owner_host'] = "";
+$conf['emailadd']      = "Administrator@RKHTECH.org";
+$conf['bot_owner']     = "Techhelper1";
+$conf['bot_owner_host'] = "RKHTECH.org";
 $conf['user_modes']    = "+RB";
  
 /* Do Not Edit This Line. */
@@ -33,9 +33,9 @@ $conf['authd_user'][6] = "";
 $conf['authd_host'][6] = ""; 
  
 /* Autojoin Rooms. */
-$autojoin[1] = "";
-$autojoin[2] = "";
-$autojoin[3] = "";
+$autojoin[1] = "#RKHTech";
+$autojoin[2] = "#php";
+$autojoin[3] = "#bots";
 $autojoin[4] = "";
 $autojoin[5] = "";
  
@@ -288,7 +288,7 @@ date_default_time_zone(-8);
 			break;
 
 		/*Google Traslator. */
-		case $pf."translate":
+		case $pf."trans":
 			$words = explode(" ", $args);
 			if (count($words) < 3) {
 				PRIVMSG($chan, "Please ".$pf."trans langfrom langto yourtextyouwanttranslating");
@@ -299,16 +299,7 @@ date_default_time_zone(-8);
 			$words = implode(" ", $words);
 			translate($from, $to, $words, $chan);
 			break;
- 
-		default:
-			if ($AIChat == true && $msg_type == 'PRIVMSG'){
-				$chatter = $trigger.' '.$args;
-				$message = aichat($chatter, $nick);
-				if ($message){ PRIVMSG($chan, $message); }
-				}
-			break;
-
- 
+  
 		/* Urban Dictionary. */
 		case $pf."urban":
 			PrintData($trigger.' '.$args, $nick);
@@ -556,193 +547,6 @@ function ImdbQuotes($SearchQuery, $chan){
 		}
 	}
 
-/*Google Translator. (Language Check) */
-function lang_check($lang, $languages) {
- 
-	/* Convert to lower case and trim. */
-	$lang = trim(strtolower($lang));
- 
-	/* Check to see if the language is in the array. */
-	if (array_key_exists($lang, $languages)) { return $lang; }
-	foreach ($languages as $this_lang => $this_init) {
-		if ($lang == $this_init) { return $this_lang; }
-		}
- 
-	/* Check for abbreviations and mis-spellings. */
-	switch ($lang) {
-		case "sq":
-		case "alb":
-		case "alban":
-		case "albanien":
-		case "albanese":
-			return "albanian";
-			break;
-		case "cs":
-		case "check":
-		case "chezc":
-		case "cz":
-			return "czech";
-			break;
-		case "da":
-		case "dane":
-		case "dan":
-			return "danish";
-			break;
-		case "nl":
-		case "ned":
-		case "nederlands":
-			return "dutch";
-			break;
-		case "en":
-		case "eng":
-		case "england":
-		case "brit":
-		case "british":
-			return "english";
-			break;
-		case "et":
-		case "est":
-		case "estonien":
-			return "estonian";
-			break;
-		case "tl":
-		case "fil":
-		case "filapino":
-		case "philipino":
-			return "filipino";
-			break;
-		case "fi":
-		case "fin":
-		case "finn":
-		case "finish":
-			return "finnish";
-			break;
-		case "fr":
-		case "fra":
-		case "fren":
-		case "fre":
-		case "francais":
-			return "french";
-			break;
-		case "gl":
-		case "gal":
-		case "galicien":
-			return "galician";
-			break;
-		case "de":
-		case "germ":
-		case "deutsche":
-		case "deutch":
-		case "ger":
-			return "german";
-			break;
-		case "el":
-		case "grek":
-		case "greece":
-		case "grk":
-		case "gre":
-			return "greek";
-			break;
-		case "hu":
-		case "hun":
-		case "hungary":
-		case "hungarien":
-			return "hungarian";
-			break;
-		case "in":
-		case "ind":
-		case "indonesien":
-			return "indonesian";
-			break;
-		case "it":
-		case "ita":
-		case "italy":
-			return "italian";
-			break;
-		case "ja":
-		case "jap":
-		case "japan":
-		case "japenese":
-			return "japanese";
-			break;
-		case "lv":
-		case "lat":
-		case "latvien":
-			return "latvian";
-			break;
-		case "pt":
-		case "por":
-		case "port":
-		case "portugal":
-		case "portugese":
-			return "portuguese";
-			break;
-		case "es":
-		case "sp":
-		case "spa":
-		case "spain":
-		case "spannish":
-			return "spanish";
-			break;
-		case "ru":
-		case "rus":
-		case "russia":
-		case "russien":
-			return "russian";
-			break;
-		}
- 
-	/* Return FALSE if we havent found a match. */
-	return FALSE;
- 
-	}
-
-/*Google Translator. (Main) */
-function translate($from, $to, $TextToTranslate, $chan) {
- 
-	// Define languages and their initials.
-	$languages = array(
-		"albanian"=>"sq",
-		"czech"=>"cs",
-		"danish"=>"da",
-		"dutch"=>"nl",
-		"english"=>"en",
-		"estonian"=>"et",
-		"filipino"=>"tl",
-		"finnish"=>"fi",
-		"french"=>"fr",
-		"galician"=>"gl",
-		"german"=>"de",
-		"greek"=>"el",
-		"hungarian"=>"hu",
-		"indonesian"=>"id",
-		"italian"=>"it",
-		"latvian"=>"lv",
-		"japanese"=>"ja",
-		"portuguese"=>"pt",
-		"spanish"=>"es",
-		"russian"=>"ru",
-		);
- 
-	// Parse for alternative spellings.
-	$to = lang_check($to, $languages);
-	$from = lang_check($from, $languages);
- 
-	// Check to and from languages.
-	if ($to == "" || $from == "" || !array_key_exists($to, $languages)
-	|| !array_key_exists($from, $languages) || $to === FALSE || $from === FALSE) {
-		return FALSE;
-		}
-	$url = "http://www.google.com/translate_t?text=".urlencode($TextToTranslate)."&langpair=".$languages[$from]."|".$languages[$to]."#";
-	$contents = @file_get_contents($url);
-	if ($contents){
-		preg_match('/<input type=hidden name=gtrans value="(.*?)">/', $contents, $match);
-		$result = Translation . ' ('.ucfirst($from).' to '.ucfirst($to).'): ' . trim(preg_replace('/[\r\n\t ]+/', ' ', $match['1']));
-		PRIVMSG($chan, $result);
-	} else {
-		PRIVMSG($chan, $http_response_header[0]);
-		}
- 
 /* Urban Dictionary. */
 function UrbanDict($urban_query, $chan){
 	global $font;
@@ -868,7 +672,7 @@ function GoogleCalc($query){
 			return str_replace(array("Â", "<font size=-2> </font>", " &#215; 10", "<sup>", "</sup>"), array("", "", "e", "^", ""), $matches['1']);
 			}
 		}
-	}
+
  
 /* Wikipedia. */
 function Wikipedia($query, $chan){
