@@ -236,8 +236,8 @@ date_default_time_zone(-8);
 		/* Commands. */
 		case $pf."commands":
 			PrintData($trigger.' '.$args, $nick);
-		PRIVMSG($chan, ".tinyurl <url> (reverse a tinyurl. | generate a tinyurl.) .chuck .vin .mrt .jack .wz <weather location.> .urban <term> (urban dictionary.) .wiki <term> (wikipedia.) .youtube <query> (3 results default.) .discogs <query> (3 results default.) .imdb <query> (3 results default.) .google <query> (3 results default.) .gs <query> (google search, 1 result.) .php <query> (php.net search, 1 result.) .acro <acronym> (acro definitions)");
-                PRIVMSG($chan, ".calc <query> (google calculator.) .port <ip> <port> or <ip>:<port> (port scan.)");
+		PRIVMSG($chan, ".tinyurl <url> (reverse a tinyurl. | generate a tinyurl.) .chuck .vin .mrt .jack .weather <weather location.> .urban <term> (urban dictionary.) .wiki <term> (wikipedia.) .youtube <query> (3 results default.) .discogs <query> (3 results default.) .imdb <query> (3 results default.) .google <query> (3 results default.) .gs <query> (google search, 1 result.) .php <query> (php.net search, 1 result.) .acro <acronym> (acro definitions)");
+                PRIVMSG($chan, ".calc <query> (google calculator.) .port <ip> <port> (port scan.) .translate langfrom langto query");
  		break;
 
 		/* TinyUrl. */
@@ -260,10 +260,37 @@ date_default_time_zone(-8);
 			break;
  
 		/* Weather. */
-		case $pf."wz":
+		case $pf."weather":
 			PrintData($trigger.' '.$args, $nick);
 			PRIVMSG($chan, WunderGround($args, $nick));
 			break;
+		
+		/* Imdb Quotes. */
+		case $pf."quote":
+			ImdbQuotes($args, $chan);
+			break;
+
+		/*Google Traslator. */
+		case $pf."translate":
+			$words = explode(" ", $args);
+			if (count($words) < 3) {
+				PRIVMSG($chan, "Please ".$pf."trans langfrom langto yourtextyouwanttranslating");
+				break;
+				}
+			$from = array_shift($words);
+			$to = array_shift($words);
+			$words = implode(" ", $words);
+			translate($from, $to, $words, $chan);
+			break;
+ 
+		default:
+			if ($AIChat == true && $msg_type == 'PRIVMSG'){
+				$chatter = $trigger.' '.$args;
+				$message = aichat($chatter, $nick);
+				if ($message){ PRIVMSG($chan, $message); }
+				}
+			break;
+
  
 		/* Urban Dictionary. */
 		case $pf."urban":
@@ -364,7 +391,7 @@ function ircLogin($socket){
 	print nl2br(date('H:i:s')." - <b>Sending Login Data...</b>\n");
 	SockSend($socket, "USER ".$conf['botname']." ".strtolower($conf['botname'])." ".$conf['botname']." :".$conf['realname'], "login");
 	SockSend($socket, "NICK ".$conf['botname'], "login");
-	if ($conf['password'] != ''){ SockSend($socket, "PRIVMSG NICKSERV IDENTIFY ".$conf['password'], "login"); }
+	if ($conf['password'] != ''){ SockSend($socket, "PRIVMSG NICKSERV :IDENTIFY ".$conf['password'], "login"); }
 	if ($conf['user_modes'] != ''){ SockSend($socket, "MODE ".$conf['botname']." ".$conf['user_modes'], "login"); }
 	flush();
 	sleep(2);
@@ -485,6 +512,219 @@ function JackBauer(){
 	preg_match('/<div style=".*">Fact ID #\d{1,5}:[\s](.*?)<\/div>/', file_get_contents($url), $matches);
 	return html_entity_decode($matches['1']);
 	}
+
+/* IMDB Film Quotes. */
+function ImdbQuotes($SearchQuery, $chan){
+	if (!empty($SearchQuery)){
+		$url = GoogleSearch($SearchQuery, $chan, 1, "quotes");
+		$contents = file_get_contents($url);
+		$contents = strstr($contents, '<!-- End TOP_RHS -->');
+		$contents = preg_replace('/[\r\n\t ]+/', ' ', $contents);
+		$contents = str_replace('&#x27;', "'", $contents);
+		$array = explode('<hr width="30%">', trim($contents));
+		$num = count($array);
+		if ($num){
+			$num = mt_rand(0,$num)-1;
+			preg_match_all('/(.*?)<\/b>:(.*?)<br>/', $array[$num], $matches);
+			$count = count($matches['0']);
+			for($i=0; $i < $count; $i++){
+				preg_match('/(.*?)<\/b>:(.*?)<br>/', $matches['0'][$i], $matches1);
+				Truncate(trim(strip_tags($matches1['1'])).': '.trim(strip_tags($matches1['2'])), $chan);sleep(1);
+			}
+		} else {
+			PRIVMSG($chan,'There were no results for "'.$SearchQuery.'".');
+			}
+	} else {
+		PRIVMSG($chan,'Try searching a Film/Show title.');
+		}
+	}
+
+/*Google Translator. (Language Check) */
+function lang_check($lang, $languages) {
+ 
+	/* Convert to lower case and trim. */
+	$lang = trim(strtolower($lang));
+ 
+	/* Check to see if the language is in the array. */
+	if (array_key_exists($lang, $languages)) { return $lang; }
+	foreach ($languages as $this_lang => $this_init) {
+		if ($lang == $this_init) { return $this_lang; }
+		}
+ 
+	/* Check for abbreviations and mis-spellings. */
+	switch ($lang) {
+		case "sq":
+		case "alb":
+		case "alban":
+		case "albanien":
+		case "albanese":
+			return "albanian";
+			break;
+		case "cs":
+		case "check":
+		case "chezc":
+		case "cz":
+			return "czech";
+			break;
+		case "da":
+		case "dane":
+		case "dan":
+			return "danish";
+			break;
+		case "nl":
+		case "ned":
+		case "nederlands":
+			return "dutch";
+			break;
+		case "en":
+		case "eng":
+		case "england":
+		case "brit":
+		case "british":
+			return "english";
+			break;
+		case "et":
+		case "est":
+		case "estonien":
+			return "estonian";
+			break;
+		case "tl":
+		case "fil":
+		case "filapino":
+		case "philipino":
+			return "filipino";
+			break;
+		case "fi":
+		case "fin":
+		case "finn":
+		case "finish":
+			return "finnish";
+			break;
+		case "fr":
+		case "fra":
+		case "fren":
+		case "fre":
+		case "francais":
+			return "french";
+			break;
+		case "gl":
+		case "gal":
+		case "galicien":
+			return "galician";
+			break;
+		case "de":
+		case "germ":
+		case "deutsche":
+		case "deutch":
+		case "ger":
+			return "german";
+			break;
+		case "el":
+		case "grek":
+		case "greece":
+		case "grk":
+		case "gre":
+			return "greek";
+			break;
+		case "hu":
+		case "hun":
+		case "hungary":
+		case "hungarien":
+			return "hungarian";
+			break;
+		case "in":
+		case "ind":
+		case "indonesien":
+			return "indonesian";
+			break;
+		case "it":
+		case "ita":
+		case "italy":
+			return "italian";
+			break;
+		case "ja":
+		case "jap":
+		case "japan":
+		case "japenese":
+			return "japanese";
+			break;
+		case "lv":
+		case "lat":
+		case "latvien":
+			return "latvian";
+			break;
+		case "pt":
+		case "por":
+		case "port":
+		case "portugal":
+		case "portugese":
+			return "portuguese";
+			break;
+		case "es":
+		case "sp":
+		case "spa":
+		case "spain":
+		case "spannish":
+			return "spanish";
+			break;
+		case "ru":
+		case "rus":
+		case "russia":
+		case "russien":
+			return "russian";
+			break;
+		}
+ 
+	/* Return FALSE if we havent found a match. */
+	return FALSE;
+ 
+	}
+
+/*Google Translator. (Main) */
+function translate($from, $to, $TextToTranslate, $chan) {
+ 
+	// Define languages and their initials.
+	$languages = array(
+		"albanian"=>"sq",
+		"czech"=>"cs",
+		"danish"=>"da",
+		"dutch"=>"nl",
+		"english"=>"en",
+		"estonian"=>"et",
+		"filipino"=>"tl",
+		"finnish"=>"fi",
+		"french"=>"fr",
+		"galician"=>"gl",
+		"german"=>"de",
+		"greek"=>"el",
+		"hungarian"=>"hu",
+		"indonesian"=>"id",
+		"italian"=>"it",
+		"latvian"=>"lv",
+		"japanese"=>"ja",
+		"portuguese"=>"pt",
+		"spanish"=>"es",
+		"russian"=>"ru",
+		);
+ 
+	// Parse for alternative spellings.
+	$to = lang_check($to, $languages);
+	$from = lang_check($from, $languages);
+ 
+	// Check to and from languages.
+	if ($to == "" || $from == "" || !array_key_exists($to, $languages)
+	|| !array_key_exists($from, $languages) || $to === FALSE || $from === FALSE) {
+		return FALSE;
+		}
+	$url = "http://www.google.com/translate_t?text=".urlencode($TextToTranslate)."&langpair=".$languages[$from]."|".$languages[$to]."#";
+	$contents = @file_get_contents($url);
+	if ($contents){
+		preg_match('/<input type=hidden name=gtrans value="(.*?)">/', $contents, $match);
+		$result = Translation . ' ('.ucfirst($from).' to '.ucfirst($to).'): ' . trim(preg_replace('/[\r\n\t ]+/', ' ', $match['1']));
+		PRIVMSG($chan, $result);
+	} else {
+		PRIVMSG($chan, $http_response_header[0]);
+		}
  
 /* Urban Dictionary. */
 function UrbanDict($urban_query, $chan){
