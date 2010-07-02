@@ -33,7 +33,7 @@ $conf['authd_user'][6] = "";
 $conf['authd_host'][6] = ""; 
  
 /* Autojoin Rooms. */
-$autojoin[1] = "#RKHTech";
+$autojoin[1] = "#rkhtech";
 $autojoin[2] = "#php";
 $autojoin[3] = "#bots";
 $autojoin[4] = "";
@@ -254,7 +254,7 @@ date_default_time_zone(-8);
 		case $pf."commands":
 			PrintData($trigger.' '.$args, $nick);
 		PRIVMSG($chan, ".tinyurl <url> (reverse a tinyurl. | generate a tinyurl.) .chuck .vin .mrt .jack .weather <weather location.> .urban <term> (urban dictionary.) .wiki <term> (wikipedia.) .youtube <query> (3 results default.) .discogs <query> (3 results default.) .imdb <query> (3 results default.) .google <query> (3 results default.) .gs <query> (google search, 1 result.) .php <query> (php.net search, 1 result.) .acro <acronym> (acro definitions)");
-                PRIVMSG($chan, ".calc <query> (google calculator.) .port <ip> <port> (port scan.) .translate langfrom langto query");
+                PRIVMSG($chan, ".calc <query> (google calculator.) .port <ip> <port> (port scan.)");
  		break;
 
 		/* TinyUrl. */
@@ -281,25 +281,7 @@ date_default_time_zone(-8);
 			PrintData($trigger.' '.$args, $nick);
 			PRIVMSG($chan, WunderGround($args, $nick));
 			break;
-		
-		/* Imdb Quotes. */
-		case $pf."quote":
-			ImdbQuotes($args, $chan);
-			break;
 
-		/*Google Traslator. */
-		case $pf."trans":
-			$words = explode(" ", $args);
-			if (count($words) < 3) {
-				PRIVMSG($chan, "Please ".$pf."trans langfrom langto yourtextyouwanttranslating");
-				break;
-				}
-			$from = array_shift($words);
-			$to = array_shift($words);
-			$words = implode(" ", $words);
-			translate($from, $to, $words, $chan);
-			break;
-  
 		/* Urban Dictionary. */
 		case $pf."urban":
 			PrintData($trigger.' '.$args, $nick);
@@ -493,7 +475,7 @@ function EvalBuffer($code){
 	$output = eval($code);
 		return $output;
 		}
-	
+
  
 /* TinyUrl */
 function TinyUrl($url){
