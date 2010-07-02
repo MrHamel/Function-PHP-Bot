@@ -14,15 +14,17 @@ Any code contributation is welcome, E-Mail me at Administrator@RKHTECH.org.
 Authorization "AUTH" will allow you to control the bot.
 Joining/parting channels, and running PHP/Shell code, and change triggers.
 
-.auth add <nick>
-.auth del <nick>
-.auth list
-.join <chan>
-.part <null | chan>
-.quit <null | message>
+Commands that start with # don't work just yet.
+
+#.auth add <nick>
+#.auth del <nick>
+#.auth list
+#.join <chan>
+#.part <null | chan>
+#.quit <null | message>
 .restart
-.trigger <char> (change commands trigger.)
-.eval <php code> (use echo or print to return the result.)
+#.trigger <char> (change commands trigger.)
+#.eval <php code> (use echo or print to return the result.)
 .tinyurl <url> (reverse a tinyurl. | generate a tinyurl.)
 .chuck
 .vin
