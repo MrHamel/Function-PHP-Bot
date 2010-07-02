@@ -7,3 +7,38 @@ Once loaded look at commands by doing ".commands"
 To kill it type "killall php"
 
 Any code contributation is welcome, E-Mail me at Administrator@RKHTECH.org.
+
+!!!DO NOT RUN THIS AS ROOT!!! the .shell commands run as the same user that processes it.
+
+
+Authorization "AUTH" will allow you to control the bot.
+Joining/parting channels, and running PHP/Shell code, and change triggers.
+
+.auth add <nick>
+.auth del <nick>
+.auth list
+.join <chan>
+.part <null | chan>
+.quit <null | message>
+.restart
+.trigger <char> (change commands trigger.)
+.eval <php code> (use echo or print to return the result.)
+.tinyurl <url> (reverse a tinyurl. | generate a tinyurl.)
+.chuck
+.vin
+.mrt
+.jack
+.weather <weather location>
+.urban <term> (urban dictionary)
+.wiki <term> (wikipedia)
+.youtube <query> (3 results default)
+.discogs <query> (3 results default)
+.imdb <query> (3 results default)
+.google <query> (3 results default)
+.gs <query> (google search, 1 result)
+.php <query> (php.net search, 1 result)
+.acro <acronym> (acro definitions)
+.calc <query> (google calculator)
+.port <ip> <port> (port scan)
+.quote <film title> (fetches quotes from imdb.com)
+.trans <langfrom> <langto> <query> (google translator)
